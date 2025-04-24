@@ -223,10 +223,4 @@ def show_pause_menu():
                     sys.exit()
 
 
-def main():
-    while True:
-        p, q = show_main_menu()
-        
 
-if __name__ == "__main__":
-    main()
