@@ -40,13 +40,13 @@ WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("The maze")
 
-# Load sound effects
-son_click = pygame.mixer.Sound("assets/songs/678248__pixeliota__mouse-click-sound.mp3")
-son_menu = pygame.mixer.Sound("assets/songs/menu.wav")
+# Load sound effects/chemin a verifier
+son_click = pygame.mixer.Sound("interface-graphique/assets/songs/678248__pixeliota__mouse-click-sound.mp3")
+son_menu = pygame.mixer.Sound("interface-graphique/assets/songs/menu.wav")
 
 # Load and scale background
 try:
-    background = pygame.image.load("maze.jpg")
+    background = pygame.image.load("interface-graphique/assets/images/maze.jpg")
     background = pygame.transform.scale(background, (800, 600))
 except:
     background = pygame.Surface((800, 600))
@@ -142,9 +142,9 @@ def show_main_menu():
                 for rect, niveau in buttons:
                     if rect.collidepoint(event.pos):
                         son_click.play()
-                        return {"Simple": (10, 10), 
-                                "Moyen": (15, 10), 
-                                "Avancé": (20, 12)}[niveau]
+                        return {"Simple": (10, 10,200), 
+                                "Moyen": (15, 12,300), 
+                                "Avancé": (20, 15,100)}[niveau]
                 
                 if quit_rect.collidepoint(event.pos):
                     son_click.play()
@@ -223,4 +223,12 @@ def show_pause_menu():
                     sys.exit()
 
 
+#def main():
+   # while True:
+        # show_main menus return 3 argument 
+        #rows, cols ,loop= show_main_menu()
+        
+
+#if __name__ == "__main__":
+   # main()
 
