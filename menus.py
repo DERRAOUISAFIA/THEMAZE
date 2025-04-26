@@ -41,8 +41,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("The maze")
 
 # Load sound effects
-son_click = pygame.mixer.Sound("678248__pixeliota__mouse-click-sound.mp3")
-son_menu = pygame.mixer.Sound("menu.wav")
+son_click = pygame.mixer.Sound("assets/songs/678248__pixeliota__mouse-click-sound.mp3")
+son_menu = pygame.mixer.Sound("assets/songs/menu.wav")
 
 # Load and scale background
 try:
