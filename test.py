@@ -4,11 +4,13 @@ import sys
 
 # Configuration du labyrinthe (1 = mur, 0 = chemin)
 maze = [
-    [1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 1],
-    [1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1]
+    [1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 1, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 1],
+    [1, 0, 1, 0, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 0, 0]
 ]
 
 class RaycastingDemo:
@@ -27,8 +29,8 @@ class RaycastingDemo:
         
         # Textures simplifiées
         self.wall_color = (200, 100, 50)
-        self.floor_color = (50, 50, 50)
-        self.sky_color = (100, 100, 255)
+        self.floor_color = (34, 139, 34)
+        self.sky_color = (135, 206, 235)
     
     def handle_input(self):
         keys = pygame.key.get_pressed()

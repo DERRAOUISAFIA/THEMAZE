@@ -1,6 +1,8 @@
+
 import math
 from panda3d.core import *
 from direct.showbase.ShowBase import ShowBase
+from pyamaze import maze
 
 class MazeGame(ShowBase):
     def __init__(self, maze):
@@ -8,7 +10,7 @@ class MazeGame(ShowBase):
         
         # Charger le modèle de mur
         self.wall_model = self.loader.loadModel("models/box")
-        self.wall_model.setTexture(self.loader.loadTexture("textures/wall.png"))
+        self.wall_model.setTexture(self.loader.loadTexture("assets/images/green_wall.png"))
         
         # Construire le labyrinthe
         for y in range(len(maze)):
@@ -40,6 +42,5 @@ class MazeGame(ShowBase):
             self.camera.getY() + dy,
             self.camera.getZ()
         )
-
 game = MazeGame(maze)
 game.run()
