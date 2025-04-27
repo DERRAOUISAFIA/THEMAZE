@@ -223,6 +223,50 @@ def show_pause_menu():
                     sys.exit()
 
 
+def menu_choix_joueur():
+    overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 180))
+    screen.blit(overlay, (0, 0))
+    
+    # menu principal 
+    menu_rect = pygame.Rect(WIDTH//2 - 150, HEIGHT//2 - 150, 300, 350)  
+    pygame.draw.rect(screen, GRAY, menu_rect, border_radius=10)
+    pygame.draw.rect(screen, DARK_GRAY, menu_rect, 2, border_radius=10)
+    
+    # titre menu
+    title = font_large.render("choisir un joueur", True, WHITE)
+    screen.blit(title, (menu_rect.x + menu_rect.width//2 - title.get_width()//2, 
+                        menu_rect.y + 20))
+
+    # bouton homme
+    homme_rect = pygame.Rect(menu_rect.x + 50, menu_rect.y + 70, 200, 40)
+    pygame.draw.rect(screen, GREEN, homme_rect, border_radius=5)
+    pygame.draw.rect(screen, DARK_GRAY, homme_rect, 2, border_radius=5)
+    homme_text = font_small.render("homme", True, BLACK)
+    screen.blit(homme_text, (homme_rect.x + homme_rect.width//2 - homme_text.get_width()//2, 
+                             homme_rect.y + 10))
+
+    # bouton femme
+    femme_rect = pygame.Rect(menu_rect.x + 50, menu_rect.y + 130, 200, 40)
+    pygame.draw.rect(screen, (255, 204, 0), femme_rect, border_radius=5)
+    pygame.draw.rect(screen, DARK_GRAY, femme_rect, 2, border_radius=5)
+    femme_text = font_small.render("femme", True, BLACK)
+    screen.blit(femme_text, (femme_rect.x + femme_rect.width//2 - femme_text.get_width()//2, 
+                              femme_rect.y + 10))
+    pygame.display.flip()
+     
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if homme_rect.collidepoint(event.pos):
+                    son_click.play()
+                    return "homme"
+                elif femme_rect.collidepoint(event.pos):
+                    son_click.play()
+                    return "femme"
 #def main():
    # while True:
         # show_main menus return 3 argument 
