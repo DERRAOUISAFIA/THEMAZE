@@ -1,4 +1,4 @@
-# ======= algos.py corrigé =======
+# ======= algos.py =======
 
 from collections import deque
 import heapq
