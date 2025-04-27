@@ -3,21 +3,34 @@ from panda3d.core import AmbientLight, DirectionalLight, LVector3, PointLight, S
 from direct.actor.Actor import Actor
 from direct.task import Task
 from panda3d.core import PerspectiveLens
+import simplepbr
 
 class AnimatedCharacter(ShowBase):
     def __init__(self):
         super().__init__()
 
-        # Load model and animation
-        self.character = Actor("beast3.glb", {"running": "beast3.glb"})
+        # Enable SimplePBR for realistic lighting and PBR materials
+        simplepbr.init()
+
+        # Load model with BOTH animations
+        self.character = Actor(
+            "beast3.glb",  # Main model
+            {
+                "running": "beast3.glb",    # Running animation
+                "standing": "standingbeast.glb"  # Standing animation
+            }
+        )
         self.character.reparentTo(self.render)
         self.character.setPos(0, 10, 0)
 
-        # Flag to track animation
-        self.keys = {"left": False, "right": False, "forward": False, "backward": False, "up": False, "down": False}
-        self.is_moving = False  # To track animation state
+        # Start standing animation by default
+        self.character.loop("standing")
 
-        # Keybindings (WASD + Up/Down for 3D movement)
+        # Key states for movement
+        self.keys = {"left": False, "right": False, "forward": False, "backward": False}
+        self.is_moving = False  # To track if moving or standing
+
+        # Keybindings (WASD only)
         self.accept("w", self.set_key, ["forward", True])
         self.accept("w-up", self.set_key, ["forward", False])
         self.accept("s", self.set_key, ["backward", True])
@@ -26,15 +39,11 @@ class AnimatedCharacter(ShowBase):
         self.accept("a-up", self.set_key, ["left", False])
         self.accept("d", self.set_key, ["right", True])
         self.accept("d-up", self.set_key, ["right", False])
-        self.accept("space", self.set_key, ["up", True])  # Jump or move up
-        self.accept("space-up", self.set_key, ["up", False])
-        self.accept("control", self.set_key, ["down", True])  # Move down
-        self.accept("control-up", self.set_key, ["down", False])
 
         # Add update loop
         self.taskMgr.add(self.update, "update")
 
-        # Lights: Improved lighting with stronger lights
+        # Lights setup
         self.setup_lights()
 
         # Camera setup: Follow the character from behind
@@ -47,11 +56,11 @@ class AnimatedCharacter(ShowBase):
 
     def update(self, task):
         dt = globalClock.getDt()
-        speed = 8 * dt  # Increased speed for more realistic movement
+        speed = 8 * dt  # Movement speed
 
         moving = False  # Temporary flag for this frame
 
-        # Character movement in 3D
+        # Character movement (no up/down)
         if self.keys["left"]:
             self.character.setX(self.character, -speed)
             moving = True
@@ -64,65 +73,59 @@ class AnimatedCharacter(ShowBase):
         if self.keys["backward"]:
             self.character.setY(self.character, -speed)
             moving = True
-        if self.keys["up"]:  # Move upwards (jumping)
-            self.character.setZ(self.character, speed)
-            moving = True
-        if self.keys["down"]:  # Move downwards
-            self.character.setZ(self.character, -speed)
-            moving = True
 
-        # Handle animation: play only if moving
+        # Handle animation
         if moving and not self.is_moving:
             self.character.loop("running")
             self.is_moving = True
         elif not moving and self.is_moving:
-            self.character.stop()
+            self.character.loop("standing")
             self.is_moving = False
 
-        # Rotate the character to face the direction of movement
+        # Character rotation (face the movement direction)
         if self.keys["left"]:
-            self.character.lookAt(self.character.getPos() + LVector3(-1, 0, 0))
-        if self.keys["right"]:
             self.character.lookAt(self.character.getPos() + LVector3(1, 0, 0))
-        if self.keys["forward"]:
-            self.character.lookAt(self.character.getPos() + LVector3(0, 1, 0))
-        if self.keys["backward"]:
+        elif self.keys["right"]:
+            self.character.lookAt(self.character.getPos() + LVector3(-1, 0, 0))
+        elif self.keys["forward"]:
             self.character.lookAt(self.character.getPos() + LVector3(0, -1, 0))
+        elif self.keys["backward"]:
+            self.character.lookAt(self.character.getPos() + LVector3(0, 1, 0))
 
         # Make the camera follow the character
-        camera.setPos(self.character.getPos() + self.camera_offset)
-        camera.lookAt(self.character.getPos())
+        self.camera.setPos(self.character.getPos() + self.camera_offset)
+        self.camera.lookAt(self.character.getPos())
 
         return Task.cont
 
     def setup_lights(self):
-        # Ambient light (global lighting)
+        # Ambient light
         ambient = AmbientLight("ambient")
-        ambient.setColor((1, 1, 1, 1))  # Full intensity white light
+        ambient.setColor((1, 1, 1, 1))
         self.render.setLight(self.render.attachNewNode(ambient))
 
-        # Directional light (simulating sunlight)
+        # Directional light (like sun)
         directional = DirectionalLight("directional")
         directional.setDirection(LVector3(-1, -1, -1))
-        directional.setColor((1, 1, 1, 1))  # White light at full intensity
+        directional.setColor((1, 1, 1, 1))
         directional_np = self.render.attachNewNode(directional)
-        directional_np.setPos(0, 0, 20)  # Position the directional light above the scene
+        directional_np.setPos(0, 0, 20)
         self.render.setLight(directional_np)
 
-        # Spotlight: To focus more on the character
+        # Spotlight focused on the character
         spotlight = Spotlight("spotlight")
-        spotlight.setColor((1, 1, 1, 1))  # Full intensity white light
-        spotlight.setLens(PerspectiveLens())  # A lens for the spotlight
+        spotlight.setColor((1, 1, 1, 1))
+        spotlight.setLens(PerspectiveLens())
         spotlight_np = self.render.attachNewNode(spotlight)
-        spotlight_np.setPos(0, 10, 10)  # Position the spotlight above and in front of the character
-        spotlight_np.lookAt(self.character)  # Point the spotlight at the character
+        spotlight_np.setPos(0, 10, 10)
+        spotlight_np.lookAt(self.character)
         self.render.setLight(spotlight_np)
 
-        # Point light (additional localized light near the character)
+        # Point light near the character
         point_light = PointLight("point_light")
-        point_light.setColor((1, 0.9, 0.8, 1))  # Soft warm light
+        point_light.setColor((1, 0.9, 0.8, 1))  # Warm light
         point_light_np = self.render.attachNewNode(point_light)
-        point_light_np.setPos(0, 5, 0)  # Positioning near the character
+        point_light_np.setPos(0, 5, 0)
         self.render.setLight(point_light_np)
 
 # Run the app
